@@ -17,7 +17,7 @@ kind: Deployment
 metadata:
   name: autoscaler-poc-caas
 spec:
-  replicas: 4
+  replicas: 1
   selector:
     matchLabels:
       app: autoscaler-poc-caas
