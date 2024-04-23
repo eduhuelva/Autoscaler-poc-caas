@@ -1,5 +1,5 @@
 ---
-# hello-kubernetes.custom-message.yaml
+# autoscaler-poc-caas.yam
 apiVersion: v1
 kind: Service
 metadata:
@@ -20,11 +20,11 @@ spec:
   replicas: 4
   selector:
     matchLabels:
-      app: autoscaler-poc-caa
+      app: autoscaler-poc-caas
   template:
     metadata:
       labels:
-        app: autoscaler-poc-caa
+        app: autoscaler-poc-caas
     spec:
       containers:
       - name: php-apache
