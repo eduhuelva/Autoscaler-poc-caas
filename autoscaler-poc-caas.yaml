@@ -15,7 +15,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-autoscaler-poc-caas
+  name: autoscaler-poc-caas
 spec:
   replicas: 4
   selector:
@@ -71,7 +71,7 @@ spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: deployment-autoscaler-poc-caas
+    name: autoscaler-poc-caas
   minReplicas: 3
   maxReplicas: 6
   metrics:
