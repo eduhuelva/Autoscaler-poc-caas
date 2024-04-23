@@ -1,0 +1,84 @@
+---
+# hello-kubernetes.custom-message.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-hpa-poc-caas
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 80
+  selector:
+    app: autoscaler-poc-caas
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-autoscaler-poc-caas
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: autoscaler-poc-caa
+  template:
+    metadata:
+      labels:
+        app: autoscaler-poc-caa
+    spec:
+      containers:
+      - name: php-apache
+        image: k8s.gcr.io/hpa-example
+        imagePullPolicy: IfNotPresent        
+        ports:
+        - containerPort: 80
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "password"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "200m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: poc-caas-03-hpa
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: autoscaler-poc-caas.apps.k8s-001.frontedge.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: service-hpa-poc-caas
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+status:
+  loadBalancer: {}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: autoscaler-poc-caas
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: deployment-autoscaler-poc-caas
+  minReplicas: 3
+  maxReplicas: 6
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 50
+---
